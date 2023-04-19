@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Coding Standard">
+    <description>Coding Standard</description>
+    <!-- Display Progress -->
+    <arg value="p"/>
+    <!-- Use Colorized Output -->
+    <arg name="colors"/>
+    <!-- Rule Set -->
+    <rule ref="PSR2"/>
+    <!-- preventing duplicate class name -->
+    <rule ref="Generic.Classes.DuplicateClassName"/>
+    <!-- must have line ending -->
+    <rule ref="Generic.Files.LineEndings"/>
+    <!-- array must be use short syntax array() == [] -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    <!--<rule ref="SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse"/>-->
+    <!-- <exclude-pattern>*/Utils/HeroIconsOutline.php</exclude-pattern> -->
+    <!-- Path To Check -->
+    <!-- phpcs does not yet support attributes -->
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>src/Routes/Attributes</exclude-pattern>
+    </rule>
+    <file>src/</file>
+</ruleset>
+<!-- end -->

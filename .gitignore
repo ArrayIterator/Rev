@@ -1,0 +1,22 @@
+
+# IGNORANCE FILES
+.DS_Store
+.Thumb
+.ThumbDB
+
+# IGNORE LOG
+*.log
+
+# IDE
+.idea/
+# IGNORE PHP user.ini
+.user.ini
+
+# NODE JS
+node_modules/
+
+# COMPOSER
+vendor/
+composer.lock
+
+# STORAGE
