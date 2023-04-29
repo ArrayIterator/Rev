@@ -1,4 +1,4 @@
--- MariaDB dump 10.19  Distrib 10.11.1-MariaDB, for osx10.15 (x86_64)
+-- MariaDB dump 10.19  Distrib 10.11.1-MariaDB, for osx12.0 (x86_64)
 --
 -- Host: localhost    Database: support
 -- ------------------------------------------------------
@@ -177,12 +177,12 @@ DROP TABLE IF EXISTS `options`;
 CREATE TABLE `options` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL COMMENT 'Option Unique Name',
-  `value` text NOT NULL,
-  `autoload` tinyint(1) NOT NULL DEFAULT 0,
+  `value` text DEFAULT NULL COMMENT 'Options value',
+  `autoload` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'The autoload',
   PRIMARY KEY (`id`),
   UNIQUE KEY `[unique][name]` (`name`) USING BTREE,
   KEY `[index][name:autoload]` (`name`,`autoload`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Sistem Wide Options';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Sistem Wide Options';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -478,7 +478,7 @@ DROP TABLE IF EXISTS `sessions`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sessions` (
   `id` varchar(255) NOT NULL COMMENT 'The session_id()',
-  `entry_point` varchar(255) DEFAULT NULL COMMENT 'Additional Information about entry point (eg: regenerated)',
+  `channel` varchar(255) DEFAULT NULL COMMENT 'Additional Information about entry point (eg: regenerated)',
   `previous_id` varchar(255) NOT NULL COMMENT 'Session previous_id for regenerated (best for tracking session_regenerate_id())',
   `data` text NOT NULL COMMENT 'The session data',
   `created_at` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Session created at',
@@ -486,7 +486,7 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `[unique][previous_id]` (`previous_id`) USING BTREE COMMENT 'Unique Previous ID',
   KEY `[index][created_at:updated_at]` (`created_at`,`updated_at`) USING BTREE,
-  KEY `[index][entry_point:previous_id]` (`entry_point`,`previous_id`) USING BTREE
+  KEY `[index][channel:previous_id]` (`channel`,`previous_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Sessions Storage';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -835,4 +835,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-19 11:32:04
+-- Dump completed on 2023-04-20 11:30:56

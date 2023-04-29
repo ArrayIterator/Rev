@@ -3,25 +3,25 @@ declare(strict_types=1);
 
 namespace ArrayIterator\Rev\Source\Database\Exceptions;
 
-use ArrayIterator\Rev\Source\Database\Orm\Model;
+use ArrayIterator\Rev\Source\Database\Mapping\AbstractModel;
 use RuntimeException;
 use Throwable;
 
 class ModelException extends RuntimeException
 {
     public function __construct(
-        protected readonly Model $model,
-        string $message = "",
-        int $code = 0,
-        ?Throwable $previous = null
+        protected readonly AbstractModel $model,
+        string                           $message = "",
+        int                              $code = 0,
+        ?Throwable                       $previous = null
     ) {
         parent::__construct($message, $code, $previous);
     }
 
     /**
-     * @return Model
+     * @return AbstractModel
      */
-    public function getModel(): Model
+    public function getModel(): AbstractModel
     {
         return $this->model;
     }

@@ -100,8 +100,7 @@ final class Group implements Countable, JsonSerializable
     {
         $id = null;
         if ($record === null) {
-            end($this->queue);
-            $id   = key($this->queue);
+            $id   = array_key_last($this->queue);
             if ($id === null) {
                 return null;
             }

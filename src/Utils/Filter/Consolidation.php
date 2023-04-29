@@ -196,7 +196,7 @@ class Consolidation
      * @param $errNo
      * @param $errStr
      * @param $errFile
-     * @param $errline
+     * @param $errLine
      * @param $errContext
      *
      * @return mixed
@@ -206,7 +206,7 @@ class Consolidation
         &$errNo = null,
         &$errStr = null,
         &$errFile = null,
-        &$errline = null,
+        &$errLine = null,
         &$errContext = null
     ): mixed {
         set_error_handler(static function (
@@ -219,13 +219,13 @@ class Consolidation
             &$errNo,
             &$errStr,
             &$errFile,
-            &$errline,
+            &$errLine,
             &$errContext
         ) {
             $errNo = $no;
             $errStr = $str;
             $errFile = $file;
-            $errline = $line;
+            $errLine = $line;
             $errContext = $c;
         });
         $result = $callback();
