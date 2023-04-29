@@ -9,7 +9,11 @@ interface ResponderInterface
 {
     public function setContentType(string $contentType);
 
+    public function setCharset(?string $charset);
+
     public function getContentType() : string;
 
-    public function serve(int $code, $data, ResponseInterface $response) : ResponseInterface;
+    public function getCharset() : ?string;
+
+    public function serve(int $code, $data, ResponseInterface $response = null) : ResponseInterface;
 }

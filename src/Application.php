@@ -61,6 +61,11 @@ class Application implements BootableInterface
      */
     private ?ServerRequestInterface $request = null;
 
+    /**
+     * @var ?ServerRequestInterface
+     */
+    private ?ServerRequestInterface $defaultRequest = null;
+
     private bool $prepared = false;
 
     private bool $dispatched = false;
@@ -351,6 +356,22 @@ class Application implements BootableInterface
     }
 
     /**
+     * @return ?ServerRequestInterface
+     */
+    public function getDefaultRequest(): ?ServerRequestInterface
+    {
+        return $this->defaultRequest;
+    }
+
+    /**
+     * @param ?ServerRequestInterface $defaultRequest
+     */
+    public function setDefaultRequest(?ServerRequestInterface $defaultRequest): void
+    {
+        $this->defaultRequest = $defaultRequest;
+    }
+
+    /**
      * @return bool
      */
     public function isDispatched(): bool
@@ -419,6 +440,7 @@ class Application implements BootableInterface
             $request,
             $this
         );
+
         if ($newRequest instanceof ServerRequestInterface) {
             $request = $newRequest;
         }
@@ -445,6 +467,7 @@ class Application implements BootableInterface
             $this->response,
             $this
         );
+
         // @set(response)
         if ($response instanceof ResponseInterface) {
             $this->response = $response;
@@ -498,7 +521,9 @@ class Application implements BootableInterface
             return $this;
         }
 
-        $request ??= $this->request??$this->getServerRequestFromGlobals();
+        $request ??= $this->request
+            ??$this->getDefaultRequest()
+            ??$this->getServerRequestFromGlobals();
         $this->request = $request;
         // @start
         $benchmark = $this->benchmarkStart(

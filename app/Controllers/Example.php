@@ -20,5 +20,4 @@ class Example extends Controller
     {
         return [__FUNCTION__ => $params];
     }
-
 }

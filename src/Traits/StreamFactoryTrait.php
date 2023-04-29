@@ -12,7 +12,7 @@ trait StreamFactoryTrait
 {
     abstract public function getContainer() : ?ContainerInterface;
 
-    protected function getStreamFactory() : StreamFactoryInterface
+    public function getStreamFactory() : StreamFactoryInterface
     {
         $container = $this->getContainer();
         try {

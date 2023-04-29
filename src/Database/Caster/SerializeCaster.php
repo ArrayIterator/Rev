@@ -6,6 +6,7 @@ namespace ArrayIterator\Rev\Source\Database\Caster;
 use ArrayIterator\Rev\Source\Database\Caster\Interfaces\CasterInterface;
 use ArrayIterator\Rev\Source\Database\Caster\Traits\CasterTrait;
 use ArrayIterator\Rev\Source\Utils\Filter\DataType;
+
 class SerializeCaster implements CasterInterface
 {
     use CasterTrait;

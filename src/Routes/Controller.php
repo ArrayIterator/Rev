@@ -94,6 +94,7 @@ abstract class Controller
         }
         $eventsManager = $this->router->getEventsManager();
 
+        /** @noinspection PhpVoidFunctionResultUsedInspection */
         $response = $this->beforeMapping($method, $arguments);
 
         // call events

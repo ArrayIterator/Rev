@@ -335,7 +335,6 @@ class Consolidation
             if (is_numeric($value)) {
                 return str_contains($value, '.') ? (float)$value : (int)$value;
             }
-
             return array_key_exists($value, $annotator) ? $annotator[$value] : $value;
         }
 

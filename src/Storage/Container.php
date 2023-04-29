@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace ArrayIterator\Rev\Source\Storage;
 
+use ArrayAccess;
 use ArrayIterator\Rev\Source\Storage\Exceptions\ContainerFrozenException;
 use ArrayIterator\Rev\Source\Storage\Exceptions\ContainerNotFoundException;
 use ArrayIterator\Rev\Source\Traits\BenchmarkingTrait;
 use Psr\Container\ContainerInterface;
 
-class Container implements ContainerInterface
+class Container implements ContainerInterface, ArrayAccess
 {
     use BenchmarkingTrait;
 
@@ -43,7 +44,9 @@ class Container implements ContainerInterface
         $this->assertFrozen($id);
         unset($this->raw[$id]);
         $this->container[$id] = $container;
-        $this->arguments[$id] = $arguments;
+        if (!empty($arguments)) {
+            $this->arguments[$id] = $arguments;
+        }
     }
 
     /**
@@ -76,8 +79,16 @@ class Container implements ContainerInterface
             // @start
             $benchmark = $this->benchmarkStart(name: "id:$id", group: 'container');
             try {
-                $value = $this->container[$id](...($this->arguments[$id] ?? []));
+                $callable = $this->container[$id];
+                $arguments = ($this->arguments[$id] ?? []);
                 unset($this->container[$id], $this->arguments[$id]);
+                if ($callable instanceof ObjectContainer
+                    && ! reset($arguments) instanceof ContainerInterface
+                ) {
+                    array_unshift($arguments, $this);
+                }
+
+                $value = $callable(...$arguments);
                 $this->raw($id, $value);
                 $this->frozen[$id] = true;
                 return $value;
@@ -99,5 +110,28 @@ class Container implements ContainerInterface
     public function has(string $id): bool
     {
         return array_key_exists($id, $this->raw) || array_key_exists($id, $this->container);
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        return $this->has($offset);
+    }
+
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * @throws ContainerFrozenException
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        $this->set((string) $offset, $value);
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        $this->remove((string) $offset);
     }
 }

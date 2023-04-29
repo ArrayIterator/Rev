@@ -6,8 +6,12 @@ namespace ArrayIterator\Rev\Source\Handlers\Traits;
 use ArrayIterator\Rev\Source\Events\EventsManagerInterface;
 use ArrayIterator\Rev\Source\Events\Manager;
 use ArrayIterator\Rev\Source\Http\Factory\ResponseFactory;
+use ArrayIterator\Rev\Source\Http\Responder\Html;
+use ArrayIterator\Rev\Source\Http\Responder\Interfaces\HtmlResponderInterface;
 use ArrayIterator\Rev\Source\Http\Responder\Interfaces\JsonResponderInterface;
+use ArrayIterator\Rev\Source\Http\Responder\Interfaces\ResponderInterface;
 use ArrayIterator\Rev\Source\Http\Responder\Json;
+use ArrayIterator\Rev\Source\Utils\Filter\DataType;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -159,19 +163,63 @@ trait ErrorHandlerTraits
         return $json;
     }
 
+    protected function getHtmlResponder()
+    {
+        $container = $this->getContainer();
+        try {
+            $html = $container?->has(HtmlResponderInterface::class)
+                ? $container->get(HtmlResponderInterface::class)
+                : null;
+        } catch (Throwable) {
+            $html = new Html($container, $this->getEventsManager()??Manager::getEventsManager());
+        }
+        if (!$html instanceof HtmlResponderInterface) {
+            $html = new Html($container, $this->getEventsManager()??Manager::getEventsManager());
+        }
+
+        return $html;
+    }
+
+    protected function getResponderByAcceptedContentType(string $contentType) : ?ResponderInterface
+    {
+        if (preg_match('~/json$~i', $contentType)) {
+            return $this->getJsonResponder();
+        }
+        return $this->getHtmlResponder();
+    }
+
+    protected function getResponder(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ) : ResponderInterface {
+        if (DataType::isJsonContentType($response)) {
+            return $this->getJsonResponder();
+        }
+        if (DataType::isHtmlContentType($response)) {
+            return $this->getHtmlResponder();
+        }
+
+        $acceptHeader = $request->getHeaderLine('Accept');
+        $selectedContentTypes = explode(',', $acceptHeader);
+        $responder = null;
+        do {
+            $current = array_shift($selectedContentTypes);
+            $current = explode(';', $current, 2)[0];
+            if (!$current || str_starts_with($current, '*')) {
+                continue;
+            }
+            $responder = $this->getResponderByAcceptedContentType($current);
+        } while (!$responder && !empty($selectedContentTypes));
+
+        return $responder??$this->getHtmlResponder();
+    }
+
     protected function render(
         Throwable $exception,
         ServerRequestInterface $request,
         ResponseInterface $response
     ) : ResponseInterface {
-/*
-        $contentType = strtolower($request->getHeaderLine('Content-Type'));
-
-        if (preg_match('~/(.+)?json~', $contentType)) {
-        }
-*/
-
-        $responder = $this->getJsonResponder();
+        $responder = $this->getResponder($request, $response);
         $code = $this->getHttpCode() === 0
             ? $response->getStatusCode()
             : $this->getHttpCode();

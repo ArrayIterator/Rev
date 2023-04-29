@@ -25,6 +25,8 @@ class Json implements JsonResponderInterface
 
     private string $contentType = 'application/json';
 
+    private ?string $charset = null;
+
     public function __construct(
         ContainerInterface $container = null,
         EventsManagerInterface $eventsManager = null
@@ -52,9 +54,22 @@ class Json implements JsonResponderInterface
         return $contentType;
     }
 
+    public function setCharset(?string $charset) : void
+    {
+        $this->charset = $charset ? (trim($charset)?:null) : null;
+    }
+
     public function getContentType(): string
     {
         return $this->contentType;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getCharset(): ?string
+    {
+        return $this->charset;
     }
 
     /**
@@ -131,8 +146,8 @@ class Json implements JsonResponderInterface
             $data = [
                 'data' => $data
             ];
-        } else // make sure message is string
-        {
+        } else {
+            // make sure message is string
             $httpMessage = Code::statusMessage($code);
             if ($data === null) {
                 $httpMessage = $httpMessage??sprintf('Error %d', $code);
@@ -226,9 +241,14 @@ class Json implements JsonResponderInterface
             $body = $this->getStreamFactory()->createStream();
         }
         $body->write($this->encode($this->format($code, $data)));
+        $contentType = $this->getContentType();
+        $charset = $this->getCharset();
+        if ($charset) {
+            $contentType .= sprintf('; charset=%s', $charset);
+        }
         return $response
             ->withStatus($code)
-            ->withHeader('Content-Type', $this->getContentType())
+            ->withHeader('Content-Type', $contentType)
             ->withBody($body);
     }
 }

@@ -17,7 +17,7 @@ trait ServerRequestFactoryTrait
 {
     abstract public function getContainer() : ?ContainerInterface;
 
-    protected function getServerRequestFactory() : ServerRequestFactory
+    public function getServerRequestFactory() : ServerRequestFactory
     {
         $container = $this->getContainer();
         try {
@@ -33,7 +33,7 @@ trait ServerRequestFactoryTrait
         return $factory;
     }
 
-    protected function getServerRequestFromGlobals(): ServerRequestInterface
+    public function getServerRequestFromGlobals(): ServerRequestInterface
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $uri      = Uri::fromGlobals();

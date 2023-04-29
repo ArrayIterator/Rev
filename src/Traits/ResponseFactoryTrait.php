@@ -12,7 +12,7 @@ trait ResponseFactoryTrait
 {
     abstract public function getContainer() : ?ContainerInterface;
 
-    protected function getResponseFactory() : ResponseFactoryInterface
+    public function getResponseFactory() : ResponseFactoryInterface
     {
         $container = $this->getContainer();
         try {
