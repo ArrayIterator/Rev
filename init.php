@@ -65,6 +65,4 @@ return (function () {
             $container->set($object->getId(), $object);
         }
     }
-    print_r($container['config']);
-    exit;
 })();
